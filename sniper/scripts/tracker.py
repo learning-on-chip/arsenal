@@ -33,7 +33,7 @@ class Tracker:
 
   def compute_power(self, t0, t1):
     filename = os.path.join(output, 'power-%s-%s-%s' % (t0, t1, t1 - t0))
-    command = 'unset PYTHONHOME; %s -d %s -o %s --partial=%s:%s --no-graph --no-text' % (
+    command = 'unset PYTHONHOME; %s -d %s -o %s --partial=%s:%s' % (
       mcpat, output, filename, t0, t1
     )
     os.system(command)

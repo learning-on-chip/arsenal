@@ -5,7 +5,7 @@ import os, sys
 sniper = os.getenv('SNIPER_ROOT')
 sys.path.append(os.path.join(sniper, 'tools'))
 
-import math, re, collections, buildstack, gnuplot, getopt, pprint, sniper_lib, sniper_config, sniper_stats
+import math, re, collections, buildstack, getopt, pprint, sniper_lib, sniper_config, sniper_stats
 
 #ISSUE_WIDTH = 4
 #ALU_per_core = 6
@@ -128,7 +128,7 @@ all_names = buildstack.get_names(all_items)
 def get_all_names():
   return all_names
 
-def main(jobid, resultsdir, outputfile, powertype = 'dynamic', config = None, no_graph = False, partial = None, print_stack = True, return_data = False):
+def main(jobid, resultsdir, outputfile, powertype = 'dynamic', config = None, partial = None, return_data = False):
   tempfile = outputfile + '.xml'
 
   results = sniper_lib.get_results(jobid, resultsdir, partial = partial)
@@ -221,57 +221,27 @@ def main(jobid, resultsdir, outputfile, powertype = 'dynamic', config = None, no
   plot_labels = []
   plot_data = {}
   if powertype == 'area':
-    if print_stack:
-      print '                         Area    Area %'
     for core, (res, total, other, scale) in results.items():
       plot_data[core] = {}
       total_core = 0.; total_cache = 0.
       for name, value in res:
-        if print_stack:
-          print '  %-12s    %6.2f mm^2   %6.2f%%' % (name, float(value), 100 * float(value) / total)
         if name.startswith('core'):
           total_core += float(value)
         elif name in ('icache', 'dcache', 'l2', 'l3', 'nuca'):
           total_cache += float(value)
         plot_labels.append(name)
         plot_data[core][name] = float(value)
-      if print_stack:
-        print
-        print '  %-12s    %6.2f mm^2   %6.2f%%' % ('core', float(total_core), 100 * float(total_core) / total)
-        print '  %-12s    %6.2f mm^2   %6.2f%%' % ('cache', float(total_cache), 100 * float(total_cache) / total)
-        print '  %-12s    %6.2f mm^2   %6.2f%%' % ('total', float(total), 100 * float(total) / total)
   else:
-    if print_stack:
-      print '                     Power     Energy    Energy %'
     for core, (res, total, other, scale) in results.items():
       plot_data[core] = {}
       total_core = 0.; total_cache = 0.
       for name, value in res:
-        if print_stack:
-          energy, energy_scale = sniper_lib.scale_sci(float(value) * seconds)
-          print '  %-12s    %6.2f W   %6.2f %sJ    %6.2f%%' % (name, float(value), energy, energy_scale, 100 * float(value) / total)
         if name.startswith('core'):
           total_core += float(value)
         elif name in ('icache', 'dcache', 'l2', 'l3', 'nuca'):
           total_cache += float(value)
         plot_labels.append(name)
         plot_data[core][name] = float(value) * seconds
-      if print_stack:
-        print
-        energy, energy_scale = sniper_lib.scale_sci(float(total_core) * seconds)
-        print '  %-12s    %6.2f W   %6.2f %sJ    %6.2f%%' % ('core', float(total_core), energy, energy_scale, 100 * float(total_core) / total)
-        energy, energy_scale = sniper_lib.scale_sci(float(total_cache) * seconds)
-        print '  %-12s    %6.2f W   %6.2f %sJ    %6.2f%%' % ('cache', float(total_cache), energy, energy_scale, 100 * float(total_cache) / total)
-        energy, energy_scale = sniper_lib.scale_sci(float(total) * seconds)
-        print '  %-12s    %6.2f W   %6.2f %sJ    %6.2f%%' % ('total', float(total), energy, energy_scale, 100 * float(total) / total)
-
-  if not no_graph:
-    # Use Gnuplot to make a stacked bargraphs of these cpi-stacks
-    if 'other' in plot_labels:
-      all_names.append('other')
-    all_names_with_colors = zip(all_names, range(1,len(all_names)+1))
-    plot_labels_with_color = [n for n in all_names_with_colors if n[0] in plot_labels]
-    gnuplot.make_stacked_bargraph(outputfile, plot_labels_with_color, plot_data, 'Energy (J)')
 
   if return_data:
     return {'labels': plot_labels, 'power_data': plot_data, 'ncores': ncores, 'time_s': seconds}
@@ -1264,12 +1234,10 @@ if __name__ == '__main__':
   powertype = 'total'
   config = None
   outputfile = 'power'
-  no_graph = False
-  no_text = False
   partial = None
 
   try:
-    opts, args = getopt.getopt(sys.argv[1:], "hj:t:c:d:o:", [ 'no-graph', 'no-text', 'partial=' ])
+    opts, args = getopt.getopt(sys.argv[1:], "hj:t:c:d:o:", ['partial='])
   except getopt.GetoptError, e:
     print e
     usage()
@@ -1289,10 +1257,6 @@ if __name__ == '__main__':
       config = a
     if o == '-o':
       outputfile = a
-    if o == '--no-graph':
-      no_graph = True
-    if o == '--no-text':
-      no_text = True
     if o == '--partial':
       if ':' not in a:
         sys.stderr.write('--partial=<from>:<to>\n')
@@ -1300,4 +1264,4 @@ if __name__ == '__main__':
       partial = a.split(':')
 
 
-  main(jobid = jobid, resultsdir = resultsdir, powertype = powertype, config = config, outputfile = outputfile, no_graph = no_graph, print_stack = not no_text, partial = partial)
+  main(jobid = jobid, resultsdir = resultsdir, powertype = powertype, config = config, outputfile = outputfile, partial = partial)
