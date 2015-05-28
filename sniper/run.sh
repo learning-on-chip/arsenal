@@ -30,5 +30,7 @@ if [ ! -d ${output} ]; then
   mkdir -p ${output}
 fi
 
+export TOOLS_ROOT="${root}/tools"
+
 echo "Running ${benchmark}..."
 ${sniper} ${options}

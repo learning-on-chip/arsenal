@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
-import os, sys, math, re, collections, buildstack, gnuplot, getopt, pprint, sniper_lib, sniper_config, sniper_stats
-import math
+import os, sys
+
+sniper = os.getenv('SNIPER_ROOT')
+sys.path.append(os.path.join(sniper, 'tools'))
+
+import math, re, collections, buildstack, gnuplot, getopt, pprint, sniper_lib, sniper_config, sniper_stats
 
 #ISSUE_WIDTH = 4
 #ALU_per_core = 6
@@ -77,7 +81,7 @@ def dram_power(results, config):
 
 
 def mcpat_path():
-  return os.path.join(os.path.dirname(__file__), '../mcpat/')
+  return os.path.join(sniper, 'mcpat')
 
 def mcpat_bin():
   import platform

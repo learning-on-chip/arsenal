@@ -1,6 +1,7 @@
 import os, sim
 
-mcpat = os.path.join(os.getenv('SNIPER_ROOT'), 'tools/mcpat.py')
+tools = os.getenv('TOOLS_ROOT') or os.path.join(os.getenv('SNIPER_ROOT'), 'tools')
+mcpat = os.path.join(tools, 'mcpat.py')
 output = sim.config.output_dir
 period = 1e6 * sim.util.Time.NS
 
