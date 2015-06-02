@@ -140,6 +140,8 @@ def main(jobid, resultsdir, outputfile, powertype = 'dynamic', config = None, pa
   power = map(lambda v: v[0], power)
   file(tempfile, "w").write('\n'.join(power))
 
+  return
+
   # Run McPAT
   mcpat_run(tempfile, outputfile + '.txt')
 

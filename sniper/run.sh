@@ -12,6 +12,11 @@ if [ -z "${BENCHMARKS_ROOT}" ]; then
   exit 1
 fi
 
+if [ -z "${BULLET_ROOT}" ]; then
+  echo 'Please set BULLET_ROOT'
+  exit 1
+fi
+
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 sniper=${BENCHMARKS_ROOT}/run-sniper
 benchmark=${BENCHMARK:=blackscholes}
@@ -24,7 +29,7 @@ options+=" -n 16"
 options+=" -c gainestown"
 options+=" -c --general/total_cores=1"
 options+=" -c --general/output_dir=${output}"
-options+=" -s ${root}/scripts/tracker.py"
+options+=" -s ${root}/scripts/bullet.py"
 
 if [ ! -d ${output} ]; then
   mkdir -p ${output}
