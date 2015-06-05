@@ -1,4 +1,4 @@
-import os, sim, sys
+import os, sim, sys, time
 
 output = sim.config.output_dir
 period = 1e6 * sim.util.Time.NS
@@ -10,11 +10,13 @@ bullet = os.path.join(os.getenv('BULLET_ROOT'), 'bin', 'bullet')
 if not os.path.exists(bullet): die('cannot find bullet')
 
 database = os.path.join(output, 'database.sqlite3')
+redis = "127.0.0.1:6379"
 
 class Bullet:
     def setup(self, args):
         self.first = True
         self.t_last = 0
+        self.t_bullet = 0
         sim.util.Every(period, self.periodic, roi_only = True)
 
     def periodic(self, time, elapsed):
@@ -25,6 +27,7 @@ class Bullet:
 
     def hook_sim_end(self):
         self.process(sim.stats.get('performance_model', 0, 'elapsed_time'))
+        report("Bullet time: %.2f s" % self.t_bullet)
 
     def process(self, time):
         time = coarse(time)
@@ -39,13 +42,15 @@ class Bullet:
         if self.first:
             bullet_prepare(filename)
             self.first = False
+        t = time.time()
         bullet_run(filename, t0, t1)
+        self.t_bullet += time.time() - t
 
 def coarse(time):
     return long(long(time) / sim.util.Time.NS)
 
 def bullet_run(filename, t0, t1):
-    run('%s -c %s -d %s' % (bullet, filename, database))
+    run('%s -c %s -d %s -r %s' % (bullet, filename, database, redis))
 
 def bullet_prepare(filename):
     run('%s -c %s -d %s -p' % (bullet, filename, database))
