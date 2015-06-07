@@ -34,7 +34,7 @@ class Bullet:
     def process(self, time):
         time = coarse(time)
         sim.stats.write(str(time))
-        if self.t_last: self.compute_power(self.t_last, time)
+        self.compute_power(self.t_last, time)
         self.t_last = time
 
     def compute_power(self, t0, t1):
@@ -45,6 +45,7 @@ def coarse(time):
     return long(long(time) / sim.util.Time.NS)
 
 def bullet_send(filebase, t0, t1):
+    if t0 == 0: t0 = 'roi-begin'
     prepare = "%s -o %s -d %s --partial=%s:%s" % (mcpat_bin, filebase, output, t0, t1)
     enqueue = "(%s RPUSH %s %s > /dev/null)" % (redis_bin, queue, filebase + '.xml')
     run('unset PYTHONHOME && %s && %s &' % (prepare, enqueue))
