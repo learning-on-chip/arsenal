@@ -35,6 +35,9 @@ if [ ! -d ${output} ]; then
   mkdir -p ${output}
 fi
 
+redis-server ${root}/configs/redis.conf
+redis-cli DEL bullet-queue > /dev/null
+
 export TOOLS_ROOT="${root}/tools"
 
 echo "Running ${benchmark}..."
