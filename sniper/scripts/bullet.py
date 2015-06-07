@@ -3,6 +3,9 @@ import os, sim, sys, time
 output = sim.config.output_dir
 period = 1e6 * sim.util.Time.NS
 
+benchmark = os.getenv('BENCHMARK_NAME')
+if not benchmark: die('cannot identify the benchmark')
+
 mcpat_bin = os.path.join(os.getenv('TOOLS_ROOT'), 'mcpat.py')
 if not os.path.exists(mcpat_bin): die('cannot find mcpat.py')
 
@@ -12,8 +15,9 @@ if not os.path.exists(bullet_bin): die('cannot find bullet')
 redis_bin = 'redis-cli'
 
 server = '127.0.0.1:6379'
-queue = 'bullet-queue'
-database = os.path.join(output, 'database.sqlite3')
+queue = 'bullet'
+database = os.path.join(output, 'bullet.sqlite3')
+table = benchmark
 
 class Bullet:
     def setup(self, args):
@@ -51,7 +55,9 @@ def bullet_send(filebase, t0, t1):
     run('unset PYTHONHOME && %s && %s &' % (prepare, enqueue))
 
 def bullet_start():
-    run('%s -s %s -q %s -d %s -c &' % (bullet_bin, server, queue, database))
+    run('%s -s %s -q %s -c -d %s -t %s &' % (
+        bullet_bin, server, queue, database, table
+    ))
 
 def bullet_stop():
     run('%s RPUSH %s bullet:halt > /dev/null' % (redis_bin, queue))

@@ -19,7 +19,7 @@ fi
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 sniper=${BENCHMARKS_ROOT}/run-sniper
-benchmark=${BENCHMARK:=blackscholes}
+benchmark=${BENCHMARK_NAME:=blackscholes}
 output=${OUTPUT:=${PWD}/${benchmark}}
 
 options=
@@ -36,9 +36,10 @@ if [ ! -d ${output} ]; then
 fi
 
 redis-server ${root}/configs/redis.conf
-redis-cli DEL bullet-queue > /dev/null
+redis-cli DEL bullet > /dev/null
 
 export TOOLS_ROOT="${root}/tools"
+export BENCHMARK_NAME="${benchmark}"
 
 echo "Running ${benchmark}..."
 ${sniper} ${options}
