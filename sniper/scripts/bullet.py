@@ -12,12 +12,12 @@ if not os.path.exists(bullet_bin): die('cannot find bullet')
 redis_bin = 'redis-cli'
 
 server = '127.0.0.1:6379'
-job_queue  = 'bullet-queue'
+queue = 'bullet-queue'
 database = os.path.join(output, 'database.sqlite3')
 
 class Bullet:
     def setup(self, args):
-        bullet_run()
+        bullet_start()
         self.t_last = 0
         sim.util.Every(period, self.periodic, roi_only = True)
 
@@ -29,7 +29,7 @@ class Bullet:
 
     def hook_sim_end(self):
         self.process(sim.stats.get('performance_model', 0, 'elapsed_time'))
-        redis_run('bullet:halt')
+        bullet_stop()
 
     def process(self, time):
         time = coarse(time)
@@ -38,27 +38,26 @@ class Bullet:
         self.t_last = time
 
     def compute_power(self, t0, t1):
-        filename = os.path.join(output, 'power-%s-%s-%s' % (t0, t1, t1 - t0))
-        mcpat_run(filename, t0, t1)
-        redis_run(filename + '.xml')
+        filebase = os.path.join(output, 'power-%s-%s-%s' % (t0, t1, t1 - t0))
+        bullet_send(filebase, t0, t1)
 
 def coarse(time):
     return long(long(time) / sim.util.Time.NS)
 
-def bullet_run():
+def bullet_send(filebase, t0, t1):
+    prepare = "%s -o %s -d %s --partial=%s:%s" % (mcpat_bin, filebase, output, t0, t1)
+    enqueue = "(%s RPUSH %s %s > /dev/null)" % (redis_bin, queue, filebase + '.xml')
+    run('unset PYTHONHOME && %s && %s &' % (prepare, enqueue))
+
+def bullet_start():
     run('%s -s %s -d %s -c &' % (bullet_bin, server, database))
+
+def bullet_stop():
+    run('%s RPUSH %s bullet:halt > /dev/null' % (redis_bin, queue))
 
 def die(message):
     print('Error: %s.' % message)
     sys.exit(1)
-
-def mcpat_run(filename, t0, t1):
-    run('unset PYTHONHOME; %s -o %s -d %s --partial=%s:%s' % (
-        mcpat_bin, filename, output, t0, t1
-    ))
-
-def redis_run(filename):
-    run('%s RPUSH %s %s > /dev/null' % (redis_bin, job_queue, filename))
 
 def report(message):
     print('-------> %s' % message)
