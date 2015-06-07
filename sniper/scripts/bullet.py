@@ -50,7 +50,7 @@ def bullet_send(filebase, t0, t1):
     run('unset PYTHONHOME && %s && %s &' % (prepare, enqueue))
 
 def bullet_start():
-    run('%s -s %s -d %s -c &' % (bullet_bin, server, database))
+    run('%s -s %s -q %s -d %s -c &' % (bullet_bin, server, queue, database))
 
 def bullet_stop():
     run('%s RPUSH %s bullet:halt > /dev/null' % (redis_bin, queue))
