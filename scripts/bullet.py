@@ -1,5 +1,12 @@
 import os, sim, sys, time
 
+def die(message):
+    print('Error: %s.' % message)
+    sys.exit(1)
+
+def report(message):
+    print('-------> %s' % message)
+
 output = sim.config.output_dir
 period = 1e6 * sim.util.Time.NS
 
@@ -12,11 +19,15 @@ if not os.path.exists(mcpat_bin): die('cannot find mcpat.py')
 bullet_bin = os.path.join(os.getenv('BULLET_ROOT'), 'bin', 'bullet')
 if not os.path.exists(bullet_bin): die('cannot find bullet')
 
+results = os.getenv('RESULTS_ROOT')
+if not results: die('cannot idenitfy the results directory')
+
 redis_bin = 'redis-cli'
 
 server = '127.0.0.1:6379'
 queue = 'bullet'
-database = os.path.join(output, 'bullet.sqlite3')
+
+database = os.path.join(results, 'bullet.sqlite3')
 table = benchmark
 
 class Bullet:
@@ -61,13 +72,6 @@ def bullet_start():
 
 def bullet_stop():
     run('%s RPUSH %s bullet:halt > /dev/null' % (redis_bin, queue))
-
-def die(message):
-    print('Error: %s.' % message)
-    sys.exit(1)
-
-def report(message):
-    print('-------> %s' % message)
 
 def run(command):
     if os.system(command) != 0: die('failed to run `%s`' % command)
