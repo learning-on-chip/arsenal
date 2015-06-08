@@ -4,9 +4,6 @@ def die(message):
     print('Error: %s.' % message)
     sys.exit(1)
 
-def report(message):
-    print('-------> %s' % message)
-
 output = sim.config.output_dir
 period = 1e6 * sim.util.Time.NS
 
@@ -72,6 +69,9 @@ def bullet_start():
 
 def bullet_stop():
     run('%s RPUSH %s bullet:halt > /dev/null' % (redis_bin, queue))
+
+def report(message):
+    print('-------> [%-15s] %s' % (benchmark, message))
 
 def run(command):
     if os.system(command) != 0: die('failed to run `%s`' % command)
