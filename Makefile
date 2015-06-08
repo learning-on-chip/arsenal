@@ -31,10 +31,10 @@ all: $(benchmarks)
 
 $(benchmarks): %: results/%/.done
 
-results/%/.done: server
+results/%/.done:
 	@mkdir -p results/$*
 	@echo "Running $*..."
-	@BENCHMARK_NAME=$* ${sniper} -p parsec-$* ${options} -c --general/output_dir=${root}/results/$*
+	@(cd results/$* && BENCHMARK_NAME=$* ${sniper} -p parsec-$* ${options} -c --general/output_dir=${root}/results/$*)
 	@echo "Done with $*."
 	@touch $@
 
@@ -45,6 +45,6 @@ flush:
 	redis-cli flushall > /dev/null
 
 clean:
-	@rm -rf $(addprefix results/,$(benchmarks))
+	@rm -rf $(addprefix results/,$(benchmarks)) results/*.sqlite3
 
 .PHONY: all $(benchmarks) server flush clean
