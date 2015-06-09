@@ -1,4 +1,4 @@
-import os, sim, sys, time
+import os, re, sim, sys, time
 
 def die(message):
     print('Error: %s.' % message)
@@ -25,7 +25,7 @@ queue = 'bullet'
 
 sqlite_bin = 'sqlite3'
 database = os.path.join(results, '%s.sqlite3' % benchmark)
-table = benchmark
+table = re.sub(r'-', '_', benchmark)
 
 class Bullet:
     def setup(self, args):

@@ -1,0 +1,6 @@
+*.log
+*.result_play
+*.txt
+*.xml
+.done
+sim.*
