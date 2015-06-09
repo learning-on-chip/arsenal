@@ -20,15 +20,16 @@ results = os.getenv('RESULTS_ROOT')
 if not results: die('cannot idenitfy the results directory')
 
 redis_bin = 'redis-cli'
-
 server = '127.0.0.1:6379'
 queue = 'bullet'
 
+sqlite_bin = 'sqlite3'
 database = os.path.join(results, 'bullet.sqlite3')
 table = benchmark
 
 class Bullet:
     def setup(self, args):
+        reset()
         bullet_start()
         self.t_last = 0
         sim.util.Every(period, self.periodic, roi_only = True)
@@ -52,6 +53,10 @@ class Bullet:
     def compute_power(self, t0, t1):
         filebase = os.path.join(output, 'power-%s-%s-%s' % (t0, t1, t1 - t0))
         bullet_send(filebase, t0, t1)
+
+def reset():
+    run('%s DEL %s' % (redis_bin, queue))
+    run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, table))
 
 def coarse(time):
     return long(long(time) / sim.util.Time.NS)

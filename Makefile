@@ -10,10 +10,8 @@ endif
 
 apps = blackscholes bodytrack facesim ferret freqmine raytrace swaptions fluidanimate vips x264
 kernels = canneal dedup streamcluster
-libs = glib gsl hooks imagick libxml2 ssl tbblib mesa zlib
-tools = cmake libtool yasm
 
-benchmarks := ${apps} ${kernels} ${libs} ${tools}
+benchmarks := ${apps} ${kernels}
 
 root := $(shell pwd)
 sniper := ${BENCHMARKS_ROOT}/run-sniper
@@ -38,11 +36,15 @@ results/%/.done:
 	@echo "Done with $*."
 	@touch $@
 
-server:
-	redis-server configs/redis.conf
+setup:
+	@redis-server configs/redis.conf
 
-flush:
-	redis-cli flushall > /dev/null
+reset:
+	@redis-cli flushall > /dev/null
+
+kill:
+	@killall -q -KILL -- pinbin mcpat.py bullet || echo -n
+	@killall -q -KILL -- blackscholes x264 ferret || echo -n
 
 clean:
 	@rm -rf $(addprefix results/,$(benchmarks)) results/*.sqlite3
