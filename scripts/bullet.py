@@ -24,7 +24,7 @@ server = '127.0.0.1:6379'
 queue = 'bullet'
 
 sqlite_bin = 'sqlite3'
-database = os.path.join(results, 'bullet.sqlite3')
+database = os.path.join(results, '%s.sqlite3' % benchmark)
 table = benchmark
 
 class Bullet:
@@ -56,7 +56,7 @@ class Bullet:
 
 def reset():
     run('%s DEL %s' % (redis_bin, queue))
-    run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, table))
+    run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, database, table))
 
 def coarse(time):
     return long(long(time) / sim.util.Time.NS)
