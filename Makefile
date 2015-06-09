@@ -17,7 +17,7 @@ export TOOLS_ROOT = ${root}/tools
 export RESULTS_ROOT = ${root}/results
 
 all:
-	@echo 'Usage: make run-{BENCHMARK SUIT}-{BENCHMARK NAME}'
+	@echo 'Usage: make run-{BENCHMARK SUITE}-{BENCHMARK NAME}'
 
 run-%:
 	@$(MAKE) -C results $*
