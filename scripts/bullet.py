@@ -25,14 +25,14 @@ queue = 'bullet-%s' % benchmark
 
 sqlite_bin = 'sqlite3'
 database = os.path.join(results, '%s.sqlite3' % benchmark)
-area_table = 'area'
-power_table = 'power'
+dynamic_table = 'dynamic'
+static_table = 'static'
 
 class Bullet:
     def setup(self, args):
         reset()
         self.t_last = None
-        bullet_power_start()
+        bullet_dynamic_start()
         sim.util.Every(period, self.periodic, roi_only = True)
 
     def periodic(self, t, _):
@@ -40,39 +40,31 @@ class Bullet:
         t = coarse(t)
         sim.stats.write(str(t))
         if self.t_last == None:
-            self.compute_area(t)
+            self.compute_static(t)
         else:
-            self.compute_power(self.t_last, t)
+            self.compute_dynamic(self.t_last, t)
         self.t_last = t
 
     def hook_sim_end(self):
-        bullet_power_stop()
+        bullet_dynamic_stop()
 
-    def compute_area(self, t):
-        filebase = os.path.join(output, 'area')
-        bullet_area_send(filebase, t)
+    def compute_static(self, t):
+        filebase = os.path.join(output, 'static')
+        bullet_static_send(filebase, t)
 
-    def compute_power(self, t0, t1):
-        filebase = os.path.join(output, 'power-%s-%s' % (t0, t1))
-        bullet_power_send(filebase, t0, t1)
+    def compute_dynamic(self, t0, t1):
+        filebase = os.path.join(output, 'dynamic-%s-%s' % (t0, t1))
+        bullet_dynamic_send(filebase, t0, t1)
 
 def reset():
     run('%s DEL %s > /dev/null' % (redis_bin, queue))
-    run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, database, area_table))
-    run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, database, power_table))
+    run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, database, static_table))
+    run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, database, dynamic_table))
 
 def coarse(time):
     return long(long(time) / sim.util.Time.NS)
 
-def bullet_area_send(filebase, t):
-    run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
-      mcpat_bin, filebase, output, 'start', t
-    ))
-    run('%s area --server %s --caching --config %s --database %s --table %s &' % (
-        bullet_bin, server, filebase + '.xml', database, area_table
-    ))
-
-def bullet_power_send(filebase, t0, t1):
+def bullet_dynamic_send(filebase, t0, t1):
     run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
       mcpat_bin, filebase, output, t0, t1
     ))
@@ -80,13 +72,21 @@ def bullet_power_send(filebase, t0, t1):
       redis_bin, queue, filebase + '.xml'
     ))
 
-def bullet_power_start():
-    run('%s power --server %s --queue %s --caching --database %s --table %s &' % (
-        bullet_bin, server, queue, database, power_table
+def bullet_dynamic_start():
+    run('%s dynamic --server %s --queue %s --caching --database %s --table %s &' % (
+        bullet_bin, server, queue, database, dynamic_table
     ))
 
-def bullet_power_stop():
+def bullet_dynamic_stop():
     run('%s RPUSH %s bullet:halt > /dev/null' % (redis_bin, queue))
+
+def bullet_static_send(filebase, t):
+    run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
+      mcpat_bin, filebase, output, 'start', t
+    ))
+    run('%s static --server %s --caching --config %s --database %s --table %s &' % (
+        bullet_bin, server, filebase + '.xml', database, static_table
+    ))
 
 def report(message):
     print('-------> [%-15s] %s' % (benchmark, message))
