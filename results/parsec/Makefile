@@ -20,10 +20,14 @@ $(benchmarks): %: %/.done
 	@echo "Finished parsec-$*."
 	@touch $@
 
-clean:
-	@rm -rf $(benchmarks)
+%-clean:
+	@rm -rf $*
 
-kill:
-	@killall -q -KILL -- blackscholes x264 ferret || echo -n
+%-kill:
+	@killall -q -KILL -- $* || echo -n
 
-.PHONY: $(benchmarks) clean kill
+clean: $(addsuffix -clean,$(benchmarks))
+
+kill: $(addsuffix -kill,$(benchmarks))
+
+.PHONY: $(benchmarks) %clean %kill

@@ -1,14 +1,14 @@
-suits := cpu2006 parsec
+suites := cpu2006 parsec
 
-cpu2006-%:
-	@$(MAKE) -C cpu2006 $*
+define declare
+$(1)-%:
+	@$$(MAKE) -C $(1) $$*
+endef
 
-parsec-%:
-	@$(MAKE) -C parsec $*
+$(foreach suite,$(suites),$(eval $(call declare,$(suite))))
 
-clean: $(addsuffix -clean,$(suits))
-	@rm -f *.sqlite3
+clean: $(addsuffix -clean,$(suites))
 
-kill: $(addsuffix -kill,$(suits))
+kill: $(addsuffix -kill,$(suites))
 
-.PHONE: clean kill
+.PHONY: clean kill

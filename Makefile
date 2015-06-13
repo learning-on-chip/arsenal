@@ -23,14 +23,12 @@ run-%:
 clean:
 	@$(MAKE) -C results clean
 
-reset:
-	@redis-cli flushall > /dev/null
-
-setup:
-	@redis-server configs/redis.conf
-
 kill:
 	@killall -q -KILL -- pinbin mcpat.py bullet || echo -n
 	@$(MAKE) -C results kill
 
-.PHONY: all run-% clean reset setup kill
+setup:
+	@redis-server configs/redis.conf
+	@redis-cli flushall > /dev/null
+
+.PHONY: all run-% reset setup clean kill
