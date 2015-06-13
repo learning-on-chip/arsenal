@@ -1,4 +1,4 @@
-import os, re, sim, sys, time
+import os, sim, sys, time
 
 def die(message):
     print('Error: %s.' % message)
@@ -25,54 +25,67 @@ queue = 'bullet'
 
 sqlite_bin = 'sqlite3'
 database = os.path.join(results, '%s.sqlite3' % benchmark)
-table = re.sub(r'-', '_', benchmark)
+area_table = 'area'
+power_table = 'power'
 
 class Bullet:
     def setup(self, args):
         reset()
-        bullet_start()
-        self.t_last = 0
+        self.t_last = None
+        bullet_power_start()
         sim.util.Every(period, self.periodic, roi_only = True)
 
-    def periodic(self, time, elapsed):
-        report('Time %.2f ms, elapsed %.2f ms' % (
-            time / sim.util.Time.MS, elapsed / sim.util.Time.MS
-        ))
-        self.process(time)
+    def periodic(self, t, _):
+        report('%.2f ms' % (t / sim.util.Time.MS))
+        t = coarse(t)
+        sim.stats.write(str(t))
+        if self.t_last == None:
+            self.compute_area(t)
+        else:
+            self.compute_power(self.t_last, t)
+        self.t_last = t
 
     def hook_sim_end(self):
-        self.process(sim.stats.get('performance_model', 0, 'elapsed_time'))
-        bullet_stop()
+        bullet_power_stop()
 
-    def process(self, time):
-        time = coarse(time)
-        sim.stats.write(str(time))
-        self.compute_power(self.t_last, time)
-        self.t_last = time
+    def compute_area(self, t):
+        filebase = os.path.join(output, 'area')
+        bullet_area_send(filebase, t)
 
     def compute_power(self, t0, t1):
-        filebase = os.path.join(output, 'power-%s-%s-%s' % (t0, t1, t1 - t0))
-        bullet_send(filebase, t0, t1)
+        filebase = os.path.join(output, 'power-%s-%s' % (t0, t1))
+        bullet_power_send(filebase, t0, t1)
 
 def reset():
-    run('%s DEL %s' % (redis_bin, queue))
-    run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, database, table))
+    run('%s DEL %s > /dev/null' % (redis_bin, queue))
+    run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, database, area_table))
+    run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, database, power_table))
 
 def coarse(time):
     return long(long(time) / sim.util.Time.NS)
 
-def bullet_send(filebase, t0, t1):
-    if t0 == 0: t0 = 'roi-begin'
-    prepare = "%s -o %s -d %s --partial=%s:%s" % (mcpat_bin, filebase, output, t0, t1)
-    enqueue = "(%s RPUSH %s %s > /dev/null)" % (redis_bin, queue, filebase + '.xml')
-    run('unset PYTHONHOME && %s && %s &' % (prepare, enqueue))
-
-def bullet_start():
-    run('%s -s %s -q %s -c -d %s -t %s &' % (
-        bullet_bin, server, queue, database, table
+def bullet_area_send(filebase, t):
+    run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
+      mcpat_bin, filebase, output, 'start', t
+    ))
+    run('%s area --server %s --caching --config %s --database %s --table %s &' % (
+        bullet_bin, server, filebase + '.xml', database, area_table
     ))
 
-def bullet_stop():
+def bullet_power_send(filebase, t0, t1):
+    run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
+      mcpat_bin, filebase, output, t0, t1
+    ))
+    run('%s RPUSH %s %s > /dev/null &' % (
+      redis_bin, queue, filebase + '.xml'
+    ))
+
+def bullet_power_start():
+    run('%s power --server %s --queue %s --caching --database %s --table %s &' % (
+        bullet_bin, server, queue, database, power_table
+    ))
+
+def bullet_power_stop():
     run('%s RPUSH %s bullet:halt > /dev/null' % (redis_bin, queue))
 
 def report(message):
