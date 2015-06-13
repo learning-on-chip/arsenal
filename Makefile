@@ -7,9 +7,7 @@ endif
 
 root := $(shell pwd)
 
-options := -n 16
-options += -c gainestown
-options += -c --general/total_cores=1
+options := -c gainestown
 options += -s ${root}/scripts/bullet.py
 
 export SNIPER_OPTIONS = ${options}

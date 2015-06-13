@@ -15,8 +15,8 @@ $(benchmarks): %: %/.done
 
 %/.done:
 	@mkdir -p $*
-	@echo "Running parsec-$*..."
-	@(cd $* && BENCHMARK_NAME=$* ${sniper} ${options} -p parsec-$*)
+	@echo "Running parsec-$* on $(shell ./cores.py $*) core(s)..."
+	@(cd $* && BENCHMARK_NAME=$* ${sniper} ${options} -n $(shell ./cores.py $*) -p parsec-$*)
 	@echo "Finished parsec-$*."
 	@touch $@
 
