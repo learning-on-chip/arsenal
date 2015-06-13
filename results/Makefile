@@ -7,6 +7,7 @@ parsec-%:
 	@$(MAKE) -C parsec $*
 
 clean: $(addsuffix -clean,$(suits))
+	@rm -f *.sqlite3
 
 kill: $(addsuffix -kill,$(suits))
 
