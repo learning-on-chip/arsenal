@@ -21,7 +21,7 @@ if not results: die('cannot idenitfy the results directory')
 
 redis_bin = 'redis-cli'
 server = '127.0.0.1:6379'
-queue = 'bullet'
+queue = 'bullet-%s' % benchmark
 
 sqlite_bin = 'sqlite3'
 database = os.path.join(results, '%s.sqlite3' % benchmark)

@@ -29,6 +29,5 @@ kill:
 
 setup:
 	@redis-server configs/redis.conf
-	@redis-cli flushall > /dev/null
 
 .PHONY: all run-% reset setup clean kill
