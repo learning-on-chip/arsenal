@@ -11,6 +11,8 @@ apps = blackscholes bodytrack facesim ferret freqmine raytrace swaptions fluidan
 kernels = canneal dedup streamcluster
 benchmarks := ${apps} ${kernels}
 
+all: $(benchmarks)
+
 $(benchmarks): %: %/.done
 
 %/.done:
@@ -30,4 +32,4 @@ clean: $(addsuffix -clean,$(benchmarks))
 
 kill: $(addsuffix -kill,$(benchmarks))
 
-.PHONY: $(benchmarks) %clean %kill
+.PHONY: all $(benchmarks) %clean %kill
