@@ -2,6 +2,13 @@
 
 import sys
 
+def log2(n):
+  log2n = -1
+  while n:
+      n >>= 1
+      log2n += 1
+  return log2n
+
 def get_nthreads(program, nthreads):
   if program == 'blackscholes':
     nthreads = nthreads - 1
@@ -12,7 +19,8 @@ def get_nthreads(program, nthreads):
   elif program == 'ferret':
     nthreads = (nthreads - 2) / 4
   elif program == 'fluidanimate':
-    nthreads = 1 << log2(nthreads - 1)
+    if nthreads > 1: nthreads = 1 << log2(nthreads - 1)
+    else: nthreads = -1
   elif program == 'swaptions':
     nthreads = nthreads - 1
   elif program == 'canneal':
