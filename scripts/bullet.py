@@ -36,8 +36,7 @@ class Bullet:
         sim.util.Every(period, self.periodic, roi_only = True)
 
     def periodic(self, t, _):
-        report('%.2f ms' % (t / sim.util.Time.MS))
-        t = coarse(t)
+        report('%10.2f ms' % (t / sim.util.Time.MS))
         sim.stats.write(str(t))
         if self.t_last == None:
             self.compute_static(t)
@@ -53,7 +52,7 @@ class Bullet:
         bullet_static_send(filebase, t)
 
     def compute_dynamic(self, t0, t1):
-        filebase = os.path.join(output, 'dynamic-%s-%s' % (t0, t1))
+        filebase = os.path.join(output, 'dynamic-%s' % t0)
         bullet_dynamic_send(filebase, t0, t1)
 
 def reset():
@@ -61,15 +60,12 @@ def reset():
     run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, database, static_table))
     run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, database, dynamic_table))
 
-def coarse(time):
-    return long(long(time) / sim.util.Time.NS)
-
 def bullet_dynamic_send(filebase, t0, t1):
     run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
       mcpat_bin, filebase, output, t0, t1
     ))
-    run('%s RPUSH %s %s > /dev/null &' % (
-      redis_bin, queue, filebase + '.xml'
+    run('%s RPUSH %s "bullet:%.15e;%s" > /dev/null &' % (
+      redis_bin, queue, float(t0) / sim.util.Time.S, filebase + '.xml'
     ))
 
 def bullet_dynamic_start():
