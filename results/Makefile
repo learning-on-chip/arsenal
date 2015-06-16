@@ -7,12 +7,12 @@ export SNIPER_OPTIONS = ${options}
 
 suites := cpu2006 parsec
 
-define declare
+define declare_suite
 $(1)-%:
 	@$$(MAKE) -C $(1) $$*
 endef
 
-$(foreach suite,$(suites),$(eval $(call declare,$(suite))))
+$(foreach suite,$(suites),$(eval $(call declare_suite,$(suite))))
 
 clean: $(addsuffix -clean,$(suites))
 
