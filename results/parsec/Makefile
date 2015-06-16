@@ -26,7 +26,7 @@ $(benchmarks): %: %/.done
 	@rm -rf $*
 
 %-kill:
-	@killall -q -KILL -- $* || echo -n
+	@killall -q -KILL -- $* || true
 
 clean: $(addsuffix -clean,$(benchmarks))
 
