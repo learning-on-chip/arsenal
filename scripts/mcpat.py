@@ -3,6 +3,7 @@
 import os, sys
 
 sniper = os.getenv('SNIPER_ROOT')
+if not sniper: die('SNIPER_ROOT should be defined')
 sys.path.append(os.path.join(sniper, 'tools'))
 
 import math, re, collections, buildstack, getopt, pprint, sniper_lib, sniper_config, sniper_stats

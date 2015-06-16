@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os, sim, sys, time
 
 def die(message):
@@ -7,24 +9,24 @@ def die(message):
 output = sim.config.output_dir
 period = 1e6 * sim.util.Time.NS
 
-benchmark = os.getenv('BENCHMARK_NAME')
-if not benchmark: die('cannot identify the benchmark')
+arsenal = os.getenv('ARSENAL_ROOT')
+if not benchmark: die('ARSENAL_ROOT should be defined')
 
-mcpat_bin = os.path.join(os.getenv('TOOLS_ROOT'), 'mcpat.py')
+benchmark = os.getenv('BENCHMARK_NAME')
+if not benchmark: die('BENCHMARK_NAME should be defined')
+
+mcpat_bin = os.path.join(arsenal, 'scripts', 'mcpat.py')
 if not os.path.exists(mcpat_bin): die('cannot find mcpat.py')
 
-squire_bin = os.path.join(os.getenv('SQUIRE_ROOT'), 'bin', 'squite')
-if not os.path.exists(squite_bin): die('cannot find squite')
-
-results = os.getenv('RESULTS_ROOT')
-if not results: die('cannot idenitfy the results directory')
+squire_bin = os.path.join(arsenal, 'root', 'bin', 'squire')
+if not os.path.exists(squite_bin): die('cannot find squire')
 
 redis_bin = 'redis-cli'
 server = '127.0.0.1:6379'
-queue = 'squite-%s' % benchmark
+queue = 'squire-%s' % benchmark
 
 sqlite_bin = 'sqlite3'
-database = os.path.join(results, '%s.sqlite3' % benchmark)
+database = os.path.join(output, '%s.sqlite3' % benchmark)
 dynamic_table = 'dynamic'
 static_table = 'static'
 
@@ -64,7 +66,7 @@ def squite_dynamic_send(filebase, t0, t1):
     run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
       mcpat_bin, filebase, output, t0, t1
     ))
-    run('%s RPUSH %s "squite:%.15e;%s" > /dev/null &' % (
+    run('%s RPUSH %s "squire:%.15e;%s" > /dev/null &' % (
       redis_bin, queue, float(t0) / sim.util.Time.S, filebase + '.xml'
     ))
 
@@ -74,7 +76,7 @@ def squite_dynamic_start():
     ))
 
 def squite_dynamic_stop():
-    run('%s RPUSH %s squite:halt > /dev/null' % (redis_bin, queue))
+    run('%s RPUSH %s squire:halt > /dev/null' % (redis_bin, queue))
 
 def squite_static_send(filebase, t):
     run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
