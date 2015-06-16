@@ -10,7 +10,7 @@ output = sim.config.output_dir
 period = 1e6 * sim.util.Time.NS
 
 arsenal = os.getenv('ARSENAL_ROOT')
-if not benchmark: die('ARSENAL_ROOT should be defined')
+if not arsenal: die('ARSENAL_ROOT should be defined')
 
 benchmark = os.getenv('BENCHMARK_NAME')
 if not benchmark: die('BENCHMARK_NAME should be defined')
@@ -18,8 +18,8 @@ if not benchmark: die('BENCHMARK_NAME should be defined')
 mcpat_bin = os.path.join(arsenal, 'scripts', 'mcpat.py')
 if not os.path.exists(mcpat_bin): die('cannot find mcpat.py')
 
-squire_bin = os.path.join(arsenal, 'root', 'bin', 'squire')
-if not os.path.exists(squite_bin): die('cannot find squire')
+squire_bin = os.path.join(arsenal, 'tools', 'bin', 'squire')
+if not os.path.exists(squire_bin): die('cannot find squire')
 
 redis_bin = 'redis-cli'
 server = '127.0.0.1:6379'
@@ -34,7 +34,7 @@ class Bullet:
     def setup(self, args):
         reset()
         self.t_last = None
-        squite_dynamic_start()
+        squire_dynamic_start()
         sim.util.Every(period, self.periodic, roi_only = True)
 
     def periodic(self, t, _):
@@ -47,22 +47,22 @@ class Bullet:
         self.t_last = t
 
     def hook_sim_end(self):
-        squite_dynamic_stop()
+        squire_dynamic_stop()
 
     def compute_static(self, t):
         filebase = os.path.join(output, 'static')
-        squite_static_send(filebase, t)
+        squire_static_send(filebase, t)
 
     def compute_dynamic(self, t0, t1):
         filebase = os.path.join(output, 'dynamic-%s' % t0)
-        squite_dynamic_send(filebase, t0, t1)
+        squire_dynamic_send(filebase, t0, t1)
 
 def reset():
     run('%s DEL %s > /dev/null' % (redis_bin, queue))
     run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, database, static_table))
     run('%s %s "DROP TABLE IF EXISTS %s;"' % (sqlite_bin, database, dynamic_table))
 
-def squite_dynamic_send(filebase, t0, t1):
+def squire_dynamic_send(filebase, t0, t1):
     run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
       mcpat_bin, filebase, output, t0, t1
     ))
@@ -70,20 +70,20 @@ def squite_dynamic_send(filebase, t0, t1):
       redis_bin, queue, float(t0) / sim.util.Time.S, filebase + '.xml'
     ))
 
-def squite_dynamic_start():
+def squire_dynamic_start():
     run('%s dynamic --server %s --queue %s --caching --database %s --table %s &' % (
-        squite_bin, server, queue, database, dynamic_table
+        squire_bin, server, queue, database, dynamic_table
     ))
 
-def squite_dynamic_stop():
+def squire_dynamic_stop():
     run('%s RPUSH %s squire:halt > /dev/null' % (redis_bin, queue))
 
-def squite_static_send(filebase, t):
+def squire_static_send(filebase, t):
     run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
       mcpat_bin, filebase, output, 'start', t
     ))
     run('%s static --server %s --caching --config %s --database %s --table %s &' % (
-        squite_bin, server, filebase + '.xml', database, static_table
+        squire_bin, server, filebase + '.xml', database, static_table
     ))
 
 def report(message):
