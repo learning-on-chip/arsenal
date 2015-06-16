@@ -1,0 +1,6 @@
+[submodule "vendor/squire"]
+	path = vendor/squire
+	url = git@ukhov.me:research/code/squire.git
+[submodule "vendor/smith"]
+	path = vendor/smith
+	url = git@ukhov.me:research/code/smith.git

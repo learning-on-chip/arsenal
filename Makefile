@@ -30,4 +30,7 @@ kill:
 setup:
 	@redis-server configs/redis.conf
 
+install:
+	@$(MAKE) -C vendor
+
 .PHONY: all run-% reset setup clean kill
