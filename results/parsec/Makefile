@@ -1,5 +1,5 @@
 ifndef BENCHMARKS_ROOT
-	$(error BENCHMARKS_ROOT should be defined)
+$(error BENCHMARKS_ROOT should be defined)
 endif
 
 sniper := ${BENCHMARKS_ROOT}/run-sniper

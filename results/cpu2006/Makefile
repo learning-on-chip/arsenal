@@ -1,5 +1,5 @@
 ifndef PINBALLS_ROOT
-	$(error PINBALLS_ROOT should be defined)
+$(error PINBALLS_ROOT should be defined)
 endif
 
 sniper := ${SNIPER_ROOT}/run-sniper

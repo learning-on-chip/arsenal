@@ -1,8 +1,8 @@
 ifndef SNIPER_ROOT
-	$(error SNIPER_ROOT should be defined)
+$(error SNIPER_ROOT should be defined)
 endif
 ifndef SQUIRE_ROOT
-	$(error SQUIRE_ROOT should be defined)
+$(error SQUIRE_ROOT should be defined)
 endif
 
 root := $(shell pwd)
