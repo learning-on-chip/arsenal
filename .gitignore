@@ -1,4 +1,4 @@
-/root
+/tools
 results/*.sqlite3
 sim.info
 sim.scripts.py
