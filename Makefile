@@ -1,14 +1,14 @@
 ifndef SNIPER_ROOT
 	$(error SNIPER_ROOT should be defined)
 endif
-ifndef BULLET_ROOT
-	$(error BULLET_ROOT should be defined)
+ifndef SQUIRE_ROOT
+	$(error SQUIRE_ROOT should be defined)
 endif
 
 root := $(shell pwd)
 
 options := -c gainestown
-options += -s ${root}/scripts/bullet.py
+options += -s ${root}/scripts/squire.py
 
 export SNIPER_OPTIONS = ${options}
 export TOOLS_ROOT = ${root}/tools
@@ -24,7 +24,7 @@ clean:
 	@$(MAKE) -C results clean
 
 kill:
-	@killall -q -KILL -- pinbin mcpat.py bullet || echo -n
+	@killall -q -KILL -- pinbin mcpat.py squire || echo -n
 	@$(MAKE) -C results kill
 
 setup:
