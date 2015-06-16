@@ -1,5 +1,6 @@
 *.log
 *.result_play
+*.sqlite3
 *.txt
 *.xml
 .done
