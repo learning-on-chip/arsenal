@@ -40,7 +40,7 @@ def get_nthreads(program, nthreads):
 
 if len(sys.argv) != 2:
   sys.stderr.write('Usage: cores.py <program>\n')
-  exit(1)
+  sys.exit(1)
 
 program = sys.argv[1]
 
