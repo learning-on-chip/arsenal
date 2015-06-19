@@ -39,13 +39,15 @@ def get_nthreads(program, nthreads):
   return nthreads
 
 if len(sys.argv) != 2:
-  sys.stderr.write('Usage: cores.py <program>\n')
+  sys.stderr.write('Usage: configure.py <program>\n')
   sys.exit(1)
 
 program = sys.argv[1]
 
-cores = int(1)
-while get_nthreads(program, cores) <= 0:
-  cores += 1
+ncores = int(0)
+nthreads = int(0)
+while nthreads <= 0:
+  ncores += 1
+  nthreads = get_nthreads(program, ncores)
 
-sys.stdout.write(str(cores))
+sys.stdout.write("-B force_nthreads -n %d -g --general/total_cores=%d" % (nthreads, ncores))
