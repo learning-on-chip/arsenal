@@ -4,12 +4,11 @@ endif
 
 sniper := ${BENCHMARKS_ROOT}/run-sniper
 
-options := ${SNIPER_OPTIONS}
-options += -i small
-
 apps = blackscholes bodytrack facesim ferret freqmine raytrace swaptions fluidanimate vips x264
 kernels = canneal dedup streamcluster
 benchmarks := ${apps} ${kernels}
+
+benchmarks += freqmine_x264
 
 all: $(benchmarks)
 
@@ -20,8 +19,9 @@ $(1): $(1)/.done
 
 $(1)/.done:
 	@mkdir -p $(1)
-	@echo "Running parsec-$(1) with '$${$(1)_options}'..."
-	@(cd $(1) && BENCHMARK_NAME=$(1) $${sniper} $${options} $${$(1)_options} -p parsec-$(1))
+	@echo "Running parsec-$(1)..."
+	@echo "Arguments: $${$(1)_options}"
+	@(cd $(1) && BENCHMARK_NAME=$(1) $${sniper} $${SNIPER_OPTIONS} $${$(1)_options})
 	@echo "Finished parsec-$(1)."
 	@touch $$@
 endef

@@ -38,16 +38,41 @@ def get_nthreads(program, nthreads):
 
   return nthreads
 
+def find_ncores_nthreads(program):
+  ncores = int(0)
+  nthreads = int(0)
+  while nthreads <= 0:
+    ncores += 1
+    nthreads = get_nthreads(program, ncores)
+  return (ncores, nthreads)
+
+def process_single(program):
+  ncores, nthreads = find_ncores_nthreads(program)
+  sys.stdout.write(
+    "-B force_nthreads -n %d -g --general/total_cores=%d -p parsec-%s -i small" % (
+      nthreads, ncores, program
+    )
+  )
+
+def process_multiple(programs):
+  benchmarks = []
+  total_ncores = 0
+  for program in programs:
+    ncores, _ = find_ncores_nthreads(program)
+    benchmarks.append("parsec-%s-small-%d" % (program, ncores))
+    total_ncores += ncores
+
+  sys.stdout.write(
+    "-n %d --benchmarks=%s" % (total_ncores, ",".join(benchmarks))
+  )
+
 if len(sys.argv) != 2:
   sys.stderr.write('Usage: configure.py <program>\n')
   sys.exit(1)
 
-program = sys.argv[1]
+programs = sys.argv[1].split('_')
 
-ncores = int(0)
-nthreads = int(0)
-while nthreads <= 0:
-  ncores += 1
-  nthreads = get_nthreads(program, ncores)
-
-sys.stdout.write("-B force_nthreads -n %d -g --general/total_cores=%d" % (nthreads, ncores))
+if len(programs) == 1:
+  process_single(programs[0])
+else:
+  process_multiple(programs)
