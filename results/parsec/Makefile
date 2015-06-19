@@ -13,14 +13,20 @@ benchmarks := ${apps} ${kernels}
 
 all: $(benchmarks)
 
-$(benchmarks): %: %/.done
+define declare_benchmark
+$(1)_options := $(shell ./configure.py $(1))
 
-%/.done:
-	@mkdir -p $*
-	@echo "Running parsec-$* with '$(shell ./configure.py $*)'..."
-	@(cd $* && BENCHMARK_NAME=$* ${sniper} ${options} $(shell ./configure.py $*) -p parsec-$*)
-	@echo "Finished parsec-$*."
-	@touch $@
+$(1): $(1)/.done
+
+$(1)/.done:
+	@mkdir -p $(1)
+	@echo "Running parsec-$(1) with '$${$(1)_options}'..."
+	@(cd $(1) && BENCHMARK_NAME=$(1) $${sniper} $${options} $${$(1)_options} -p parsec-$(1))
+	@echo "Finished parsec-$(1)."
+	@touch $$@
+endef
+
+$(foreach benchmark,$(benchmarks),$(eval $(call declare_benchmark,$(benchmark))))
 
 %-clean:
 	@rm -rf $*
