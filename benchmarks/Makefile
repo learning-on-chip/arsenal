@@ -1,6 +1,10 @@
 root := $(dir $(shell pwd))
 export ARSENAL_ROOT = ${root}
 
+ifndef OUTPUT_ROOT
+export OUTPUT_ROOT = ${ARSENAL_ROOT}/results
+endif
+
 options := -c gainestown
 options += -s ${root}/scripts/recorder.py
 export SNIPER_OPTIONS = ${options}
