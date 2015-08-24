@@ -64,10 +64,10 @@ def reset():
 
 def recorder_dynamic_send(filebase, t0, t1):
     run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
-      mcpat_bin, filebase, output, t0, t1
+        mcpat_bin, filebase, output, t0, t1
     ))
     run('%s RPUSH %s "recorder:%.15e;%s" > /dev/null &' % (
-      redis_bin, queue, float(t0) / sim.util.Time.S, filebase + '.xml'
+        redis_bin, queue, float(t0) / sim.util.Time.S, filebase + '.xml'
     ))
 
 def recorder_dynamic_start():
@@ -80,7 +80,7 @@ def recorder_dynamic_stop():
 
 def recorder_static_send(filebase, t):
     run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
-      mcpat_bin, filebase, output, 'start', t
+        mcpat_bin, filebase, output, 'start', t
     ))
     run('%s static --server %s --caching --config %s --database %s --table %s &' % (
         recorder_bin, server, filebase + '.xml', database, static_table
