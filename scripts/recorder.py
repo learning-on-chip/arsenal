@@ -30,7 +30,7 @@ database = os.path.join(output, '%s.sqlite3' % benchmark)
 dynamic_table = 'dynamic'
 static_table = 'static'
 
-class Bullet:
+class Recorder:
     def setup(self, args):
         reset()
         self.t_last = None
@@ -92,4 +92,4 @@ def report(message):
 def run(command):
     if os.system(command) != 0: die('failed to run `%s`' % command)
 
-sim.util.register(Bullet())
+sim.util.register(Recorder())
