@@ -6,6 +6,7 @@ export OUTPUT_ROOT = ${ARSENAL_ROOT}/results
 endif
 
 options := -c gainestown
+options += --sim-end=last
 options += -s ${root}/scripts/recorder.py
 export SNIPER_OPTIONS = ${options}
 
