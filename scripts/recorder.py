@@ -30,8 +30,12 @@ database = os.path.join(output, '%s.sqlite3' % benchmark)
 dynamic_table = 'dynamic'
 static_table = 'static'
 
+log = os.path.join(output, '%s.log' % benchmark)
+log = open(log, 'w')
+
 class Recorder:
     def setup(self, args):
+        self.start_time = time.time()
         reset()
         self.t_last = None
         recorder_dynamic_start()
@@ -48,6 +52,7 @@ class Recorder:
 
     def hook_sim_end(self):
         recorder_dynamic_stop()
+        log.write('Elapsed time: %s s\n' % (time.time() - self.start_time))
 
     def compute_static(self, t):
         filebase = os.path.join(output, 'static')
