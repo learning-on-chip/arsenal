@@ -1,6 +1,0 @@
-[submodule "vendor/planner"]
-	path = vendor/planner
-	url = git@ukhov.me:research/code/planner.git
-[submodule "vendor/recorder"]
-	path = vendor/recorder
-	url = git@ukhov.me:research/code/recorder.git
