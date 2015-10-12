@@ -10,7 +10,7 @@ options += --sim-end=last
 options += -s ${root}/scripts/recorder.py
 export SNIPER_OPTIONS = ${options}
 
-suites := cpu2006 cpu2006pinballs parsec
+suites := cpu2006 parsec
 
 define declare_suite
 $(1)-%:
