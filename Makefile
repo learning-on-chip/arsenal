@@ -1,14 +1,14 @@
 all:
-	@echo 'Usage: make run-{BENCHMARK SUITE}-{BENCHMARK NAME}'
+	@echo 'Usage: make run-{PROGRAM SUITE}-{PROGRAM NAME}'
 
 run-%:
-	@$(MAKE) -C benchmarks $*
+	@$(MAKE) -C programs $*
 
 clean:
-	@$(MAKE) -C benchmarks clean
+	@$(MAKE) -C programs clean
 
 kill:
-	@$(MAKE) -C benchmarks kill
+	@$(MAKE) -C programs kill
 
 setup:
 	@redis-server configs/redis.conf

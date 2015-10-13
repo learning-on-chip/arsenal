@@ -12,8 +12,8 @@ period = 1e6 * sim.util.Time.NS
 arsenal = os.getenv('ARSENAL_ROOT')
 if not arsenal: die('ARSENAL_ROOT should be defined')
 
-benchmark = os.getenv('BENCHMARK_NAME')
-if not benchmark: die('BENCHMARK_NAME should be defined')
+program = os.getenv('PROGRAM_NAME')
+if not program: die('PROGRAM_NAME should be defined')
 
 mcpat_bin = os.path.join(arsenal, 'scripts', 'mcpat.py')
 if not os.path.exists(mcpat_bin): die('cannot find mcpat.py')
@@ -23,14 +23,14 @@ if not os.path.exists(recorder_bin): die('cannot find recorder')
 
 redis_bin = 'redis-cli'
 server = '127.0.0.1:6379'
-queue = 'recorder-%s' % benchmark
+queue = 'recorder-%s' % program
 
 sqlite_bin = 'sqlite3'
-database = os.path.join(output, '%s.sqlite3' % benchmark)
+database = os.path.join(output, '%s.sqlite3' % program)
 dynamic_table = 'dynamic'
 static_table = 'static'
 
-log = os.path.join(output, '%s.log' % benchmark)
+log = os.path.join(output, '%s.log' % program)
 log = open(log, 'w')
 
 class Recorder:
@@ -92,7 +92,7 @@ def recorder_static_send(filebase, t):
     ))
 
 def report(message):
-    print('-------> [%-15s] %s' % (benchmark, message))
+    print('-------> [%-15s] %s' % (program, message))
 
 def run(command):
     if os.system(command) != 0: die('failed to run `%s`' % command)
