@@ -10,8 +10,6 @@ benchmarks += cactusADM leslie3d namd gobmk dealII soplex povray calculix hmmer
 benchmarks += sjeng GemsFDTD libquantum h264ref tonto lbm omnetpp astar wrf
 benchmarks += sphinx3 xalancbmk
 
-benchmarks += lbm_mcf
-
 all: $(benchmarks)
 
 $(eval $(call declare_suite,cpu2006,$(benchmarks)))
