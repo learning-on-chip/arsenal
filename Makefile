@@ -4,13 +4,10 @@ all:
 run-%:
 	@$(MAKE) -C programs $*
 
-clean:
-	@$(MAKE) -C programs clean
-
-kill:
-	@$(MAKE) -C programs kill
+clean kill:
+	@$(MAKE) -C programs $@
 
 setup:
 	@redis-server configs/redis.conf
 
-.PHONY: all run-% reset setup clean kill
+.PHONY: all clean kill run-% setup
