@@ -41,3 +41,9 @@ should be set accordingly:
 * `SNIPER_ROOT` (should point at Sniper’s directory),
 * `BENCHMARKS_ROOT` (should point at the benchmarks’ directory), and
 * `TOOLBOX_ROOT` (should point at Toolbox’s directory).
+
+## Contributing
+
+1. Fork the project.
+2. Implement your idea.
+3. Open a pull request.
