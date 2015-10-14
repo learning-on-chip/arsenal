@@ -3,8 +3,7 @@
 import os, sim, sys, time
 
 def die(message):
-    print('Error: %s.' % message)
-    sys.exit(1)
+    raise SystemError(message)
 
 studio = os.getenv('STUDIO_ROOT')
 if not studio: die('STUDIO_ROOT should be defined')
