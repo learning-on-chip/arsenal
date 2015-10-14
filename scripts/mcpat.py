@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+# The code below is a truncated version of Sniper’s tools/mcpat.py.
+
 import os, sys, math, getopt
 
 def die(message):
