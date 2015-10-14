@@ -6,20 +6,23 @@ def die(message):
     print('Error: %s.' % message)
     sys.exit(1)
 
-output = sim.config.output_dir
-period = 1e6 * sim.util.Time.NS
+studio = os.getenv('STUDIO_ROOT')
+if not studio: die('STUDIO_ROOT should be defined')
 
-arsenal = os.getenv('ARSENAL_ROOT')
-if not arsenal: die('ARSENAL_ROOT should be defined')
+toolbox = os.getenv('TOOLBOX_ROOT')
+if not toolbox: die('TOOLBOX_ROOT should be defined')
 
 program = os.getenv('PROGRAM_NAME')
 if not program: die('PROGRAM_NAME should be defined')
 
-mcpat_bin = os.path.join(arsenal, 'scripts', 'mcpat.py')
+mcpat_bin = os.path.join(studio, 'scripts', 'mcpat.py')
 if not os.path.exists(mcpat_bin): die('cannot find mcpat.py')
 
-recorder_bin = os.path.join(arsenal, 'tools', 'bin', 'recorder')
-if not os.path.exists(recorder_bin): die('cannot find recorder')
+recorder_bin = os.path.join(toolbox, 'bin', 'recorder')
+if not os.path.exists(recorder_bin): die('cannot find Recorder')
+
+output = sim.config.output_dir
+period = 1e6 * sim.util.Time.NS
 
 redis_bin = 'redis-cli'
 server = '127.0.0.1:6379'
