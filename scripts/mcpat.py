@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys
-
-sniper = os.getenv('SNIPER_ROOT')
-if not sniper: die('SNIPER_ROOT should be defined')
-sys.path.append(os.path.join(sniper, 'tools'))
-
-import math, re, collections, buildstack, getopt, pprint, sniper_lib, sniper_config, sniper_stats
+import os, sys, math, re, collections, buildstack, getopt, pprint, sniper_lib, sniper_config, sniper_stats
 
 #ISSUE_WIDTH = 4
 #ALU_per_core = 6
