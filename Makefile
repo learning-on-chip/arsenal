@@ -17,6 +17,6 @@ kill:
 	@$(MAKE) -C programs $@
 
 setup:
-	@redis-server configs/redis.conf
+	@redis-server config/redis.conf
 
 .PHONY: all clean kill run-% setup
