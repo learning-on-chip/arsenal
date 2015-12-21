@@ -18,7 +18,7 @@ export SNIPER_BIN := ${BENCHMARKS_ROOT}/run-sniper
 
 options := -c gainestown
 options += --sim-end=last
-options += -s $(STUDIO_ROOT)/scripts/recorder.py
+options += -s $(STUDIO_ROOT)/script/recorder.py
 
 define declare_program
 $(2)_output := $${OUTPUT_ROOT}/$(2)

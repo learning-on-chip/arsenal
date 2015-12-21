@@ -1,20 +1,20 @@
 export STUDIO_ROOT := $(shell pwd)
 
 ifndef OUTPUT_ROOT
-export OUTPUT_ROOT = $(STUDIO_ROOT)/results
+export OUTPUT_ROOT = $(STUDIO_ROOT)/result
 endif
 
 usage:
 	@echo 'Usage: make run-{PROGRAM SUITE}-{PROGRAM NAME}'
 
 run-%:
-	@$(MAKE) -C programs $*
+	@$(MAKE) -C program $*
 
 clean:
-	@$(MAKE) -C programs $@
+	@$(MAKE) -C program $@
 
 kill:
-	@$(MAKE) -C programs $@
+	@$(MAKE) -C program $@
 
 setup:
 	@redis-server config/redis.conf
