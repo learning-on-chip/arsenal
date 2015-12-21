@@ -39,7 +39,7 @@ class Worker:
         self.recorder = os.path.join(config.toolbox, 'bin', 'recorder')
         if not os.path.exists(self.recorder): die('cannot find Recorder')
 
-        self.mcpat = os.path.join(config.studio, 'scripts', 'mcpat.py')
+        self.mcpat = os.path.join(config.studio, 'script', 'mcpat.py')
         if not os.path.exists(self.mcpat): die('cannot find mcpat.py')
 
     def start_dynamic(self):
