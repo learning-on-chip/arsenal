@@ -42,7 +42,7 @@ should be set accordingly:
 * `BENCHMARKS_ROOT` (should point at the benchmarks’ directory), and
 * `TOOLBOX_ROOT` (should point at Toolbox’s directory).
 
-## Contributing
+## Contribution
 
 1. Fork the project.
 2. Implement your idea.
