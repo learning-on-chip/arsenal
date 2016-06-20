@@ -4,14 +4,14 @@ import os, sim, sys, time
 
 class Config:
     def __init__(self):
+        self.program = os.getenv('PROGRAM_NAME')
+        if not self.program: die('PROGRAM_NAME should be defined')
+
         self.studio = os.getenv('STUDIO_ROOT')
         if not self.studio: die('STUDIO_ROOT should be defined')
 
         self.toolbox = os.getenv('TOOLBOX_ROOT')
         if not self.toolbox: die('TOOLBOX_ROOT should be defined')
-
-        self.program = os.getenv('PROGRAM_NAME')
-        if not self.program: die('PROGRAM_NAME should be defined')
 
         self.output = sim.config.output_dir
         self.period = 1e6 * sim.util.Time.NS
@@ -31,20 +31,20 @@ class Config:
 
 class Worker:
     def __init__(self, config):
-        self.program = config.program
         self.output = config.output
+        self.program = config.program
         self.redis = config.redis
         self.sqlite = config.sqlite
-
-        self.recorder = os.path.join(config.toolbox, 'bin', 'recorder')
-        if not os.path.exists(self.recorder): die('cannot find Recorder')
 
         self.mcpat = os.path.join(config.studio, 'script', 'mcpat.py')
         if not os.path.exists(self.mcpat): die('cannot find mcpat.py')
 
+        self.toolbox = os.path.join(config.toolbox, 'run')
+        if not os.path.exists(self.toolbox): die('cannot find the toolbox')
+
     def start_dynamic(self):
-        run('%s dynamic --server %s --queue %s --caching --database %s --table %s &' % (
-            self.recorder, self.redis['server'], self.redis['queue'],
+        run('%s recorder dynamic --server %s --queue %s --caching --database %s --table %s &' % (
+            self.toolbox, self.redis['server'], self.redis['queue'],
             self.sqlite['database'], self.sqlite['dynamic']
         ))
 
@@ -69,8 +69,8 @@ class Worker:
         run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
             self.mcpat, filebase, self.output, 'start', t
         ))
-        run('%s static --server %s --caching --config %s --database %s --table %s &' % (
-            self.recorder, self.redis['server'], filebase + '.xml',
+        run('%s recorder static --server %s --caching --config %s --database %s --table %s &' % (
+            self.toolbox, self.redis['server'], filebase + '.xml',
             self.sqlite['database'], self.sqlite['static']
         ))
 
