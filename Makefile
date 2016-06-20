@@ -1,22 +1,23 @@
 export STUDIO_ROOT := $(shell pwd)
+export TOOLBOX_ROOT := $(STUDIO_ROOT)/toolbox
 
 ifndef OUTPUT_ROOT
-export OUTPUT_ROOT = $(STUDIO_ROOT)/result
+	export OUTPUT_ROOT := $(STUDIO_ROOT)/result
 endif
 
-usage:
+all:
 	@echo 'Usage: make run-{PROGRAM SUITE}-{PROGRAM NAME}'
+
+clean kill:
+	@$(MAKE) -C program $@
+
+install update:
+	@$(MAKE) -C toolbox $@
 
 run-%:
 	@$(MAKE) -C program $*
 
-clean:
-	@$(MAKE) -C program $@
-
-kill:
-	@$(MAKE) -C program $@
-
 setup:
 	@redis-server config/redis.conf
 
-.PHONY: all clean kill run-% setup
+.PHONY: all clean install kill run-% setup update

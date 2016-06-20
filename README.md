@@ -27,20 +27,19 @@ Sniper provides a tight integration with the aforementioned benchmark suites.
 However, the benchmarks should be installed separately, which is described on
 the [Download Benchmarks](http://snipersim.org/w/Download_Benchmarks) page.
 
-The final component to install is
-[Recorder](https://github.com/learning-on-chip/recorder), which is the tool that
-collects data from Sniper and performs the actual recording of workload
-patterns. The tool is a part of
-[Toolbox](https://github.com/learning-on-chip/toolbox). The installation
-instructions of Toolbox are given on the corresponding page.
+In order to discover the locations of Sniper and the benchmarks, Studio relies
+on the following three environment variables, which should be set accordingly:
 
-Finally, in order to discover the locations of Sniper, the benchmarks, and
-Toolbox, Studio relies on the following three environment variables, which
-should be set accordingly:
+* `SNIPER_ROOT` (should point at Sniper’s directory) and
+* `BENCHMARKS_ROOT` (should point at the benchmarks’ directory).
 
-* `SNIPER_ROOT` (should point at Sniper’s directory),
-* `BENCHMARKS_ROOT` (should point at the benchmarks’ directory), and
-* `TOOLBOX_ROOT` (should point at Toolbox’s directory).
+Finally, the collection of data from Sniper and recording of workload patterns
+is delegated to [Recorder](https://github.com/learning-on-chip/recorder). The
+tool is included in this repository and should be compiled as follows:
+
+```bash
+make install
+```
 
 ## Contribution
 
