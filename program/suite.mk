@@ -1,17 +1,17 @@
 ifndef BENCHMARKS_ROOT
-$(error BENCHMARKS_ROOT should be defined)
+	$(error BENCHMARKS_ROOT should be defined)
 endif
 
 ifndef OUTPUT_ROOT
-$(error OUTPUT_ROOT should be defined)
+	$(error OUTPUT_ROOT should be defined)
 endif
 
 ifndef STUDIO_ROOT
-$(error STUDIO_ROOT should be defined)
+	$(error STUDIO_ROOT should be defined)
 endif
 
 ifndef TOOLBOX_ROOT
-$(error TOOLBOX_ROOT should be defined)
+	$(error TOOLBOX_ROOT should be defined)
 endif
 
 export SNIPER_BIN := ${BENCHMARKS_ROOT}/run-sniper
