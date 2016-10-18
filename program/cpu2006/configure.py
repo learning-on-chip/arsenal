@@ -2,28 +2,40 @@
 
 import sys
 
+SUITE = 'cpu2006'
+
+def abort():
+    sys.stderr.write('Usage: configure.py <program name>-<program input>\n')
+    sys.exit(1)
+
+def decompose(program):
+    chunks = program.split('-')
+    if len(chunks) != 2:
+        abort()
+    return chunks[0], chunks[1]
+
+def process(programs):
+    if len(programs) == 0:
+        abort()
+    if len(programs) == 1:
+        return process_single(programs[0])
+    else:
+        return process_multiple(programs)
+
 def process_single(program):
-    sys.stdout.write("-n 1 -p cpu2006-%s -i large" % sys.argv[1])
+    name, input = decompose(program)
+    return ['-n', 1, '-p', '{}-{}'.format(SUITE, name), '-i', input]
 
 def process_multiple(programs):
     benchmarks = []
-    total_ncores = 0
+    total_cores = 0
     for program in programs:
-        ncores = 1
-        benchmarks.append("cpu2006-%s-large-%d" % (program, ncores))
-        total_ncores += ncores
+        cores = 1
+        name, input = decompose(program)
+        benchmarks.append('{}-{}-{}-{}'.format(SUITE, program, input, cores))
+        total_cores += cores
+    benchmarks = ','.join(benchmarks)
+    return ['-n', total_cores, '--benchmarks={}'.format(benchmarks)]
 
-    sys.stdout.write(
-        "-n %d --benchmarks=%s" % (total_ncores, ",".join(benchmarks))
-    )
-
-if len(sys.argv) != 2:
-    sys.stderr.write('Usage: configure.py <program>\n')
-    sys.exit(1)
-
-programs = sys.argv[1].split('_')
-
-if len(programs) == 1:
-    process_single(programs[0])
-else:
-    process_multiple(programs)
+arguments = process(sys.argv[1:])
+sys.stdout.write(' '.join([str(argument) for argument in arguments]))

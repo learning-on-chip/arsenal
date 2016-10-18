@@ -6,7 +6,7 @@ ifndef OUTPUT_ROOT
 endif
 
 all:
-	@echo 'Usage: make run-{PROGRAM SUITE}-{PROGRAM NAME}'
+	@echo 'Usage: make run-<program suite>-<program name>-<program input>'
 
 clean kill:
 	@$(MAKE) -C program $@

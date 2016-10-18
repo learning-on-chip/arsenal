@@ -1,8 +1,11 @@
 include ../suite.mk
 
-programs := blackscholes bodytrack facesim ferret freqmine raytrace swaptions
-programs += fluidanimate vips x264 canneal dedup streamcluster
+names := \
+	blackscholes bodytrack canneal dedup facesim ferret fluidanimate freqmine \
+	raytrace streamcluster swaptions vips x264
 
-all: $(programs)
+inputs := small medium large
+
+programs := $(foreach input,$(inputs),$(addsuffix -$(input),$(names)))
 
 $(eval $(call declare_suite,parsec,$(programs)))

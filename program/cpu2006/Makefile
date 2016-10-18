@@ -1,10 +1,12 @@
 include ../suite.mk
 
-programs := perlbench bzip2 gcc bwaves gamess mcf milc zeusmp gromacs
-programs += cactusADM leslie3d namd gobmk dealII soplex povray calculix hmmer
-programs += sjeng GemsFDTD libquantum h264ref tonto lbm omnetpp astar wrf
-programs += sphinx3 xalancbmk
+names := \
+	GemsFDTD astar bwaves bzip2 cactusADM calculix dealII gamess gcc gobmk \
+	gromacs h264ref hmmer lbm leslie3d libquantum mcf milc namd omnetpp \
+	perlbench povray sjeng soplex sphinx3 tonto wrf xalancbmk zeusmp
 
-all: $(programs)
+inputs := large
+
+programs := $(foreach input,$(inputs),$(addsuffix -$(input),$(names)))
 
 $(eval $(call declare_suite,cpu2006,$(programs)))

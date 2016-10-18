@@ -21,6 +21,7 @@ options += --sim-end=last
 options += -s $(STUDIO_ROOT)/script/recorder.py
 
 define declare_program
+$(2)_name := $(shell echo $(2) | cut -d- -f1)
 $(2)_output := $${OUTPUT_ROOT}/$(2)
 $(2)_options = -d $${$(2)_output} $$(shell ./configure.py $(2))
 
@@ -38,12 +39,14 @@ $(2)-clean:
 	@rm -rf $${$(2)_output}
 
 $(2)-kill:
-	@killall -q -KILL -- $(2) || true
+	@killall -q -KILL -- $${$(2)_name} || true
 
 .PHONY: $(2) $(2)-clean $(2)-kill
 endef
 
 define declare_suite
+all: $(2)
+
 $(foreach program,$(2),$(eval $(call declare_program,$(1),$(program))))
 
 clean: $(addsuffix -clean,$(2))
