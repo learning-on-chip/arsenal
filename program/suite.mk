@@ -22,12 +22,16 @@ options += -s $(STUDIO_ROOT)/script/recorder.py
 
 define declare_program
 $(2)_name := $(shell echo $(2) | cut -d- -f1)
+ifndef OUTPUT_DIR
 $(2)_output := $${OUTPUT_ROOT}/$(2)
+else
+$(2)_output := ${OUTPUT_DIR}
+endif
 $(2)_options = -d $${$(2)_output} $$(shell ./configure.py $(2))
 
-$(2): $${$(2)_output}/.done
+$(2): $${$(2)_output}/.$(2)
 
-$${$(2)_output}/.done:
+$${$(2)_output}/.$(2):
 	@mkdir -p $${$(2)_output}
 	@echo "Running $(1)-$(2)..."
 	@echo "Arguments: $${$(2)_options}"

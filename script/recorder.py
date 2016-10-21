@@ -76,7 +76,7 @@ class Worker:
 
     def process_dynamic(self, t0, t1):
         self.progress('%10.2f ms' % (t1 / sim.util.Time.MS))
-        filebase = os.path.join(self.output, 'dynamic-%s' % t0)
+        filebase = os.path.join(self.output, '%s-dynamic-%s' % (self.program, t0))
         run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
             self.mcpat, filebase, self.output, t0, t1
         ))
@@ -86,7 +86,7 @@ class Worker:
         ))
 
     def process_static(self, t):
-        filebase = os.path.join(self.output, 'static')
+        filebase = os.path.join(self.output, '%s-static' % self.program)
         run('unset PYTHONHOME && %s -o %s -d %s --partial=%s:%s' % (
             self.mcpat, filebase, self.output, 'start', t
         ))
