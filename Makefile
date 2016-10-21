@@ -6,18 +6,18 @@ ifndef OUTPUT_ROOT
 endif
 
 all:
-	@echo 'Usage: make run-<program suite>-<program name>-<program input>'
-
-clean kill:
-	@$(MAKE) -C program $@
+	@echo 'Usage: make record-<program suite>-<program name>-<program input>'
 
 install update:
 	@$(MAKE) -C toolbox $@
 
-run-%:
-	@$(MAKE) -C program $*
-
 setup:
 	@redis-server config/redis.conf
 
-.PHONY: all clean install kill run-% setup update
+record-%:
+	@$(MAKE) -C program $*
+
+clean kill:
+	@$(MAKE) -C program $@
+
+.PHONY: all clean install kill setup update
