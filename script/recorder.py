@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+def die(message):
+    raise SystemError(message)
+
+try:
+    import subprocess
+except ImportError:
+    die('expected to be compiled without --without-signal-module')
+
 import os, sim, sys, time
 
 class Config:
@@ -41,17 +49,30 @@ class Worker:
 
         self.toolbox = os.path.join(config.toolbox, 'run')
         if not os.path.exists(self.toolbox): die('cannot find the toolbox')
+        self.dynamic = None
 
     def start_dynamic(self):
-        run('%s recorder dynamic --server %s --queue %s --caching --database %s --table %s &' % (
-            self.toolbox, self.redis['server'], self.redis['queue'],
-            self.sqlite['database'], self.sqlite['dynamic']
-        ))
+        arguments = [
+            self.toolbox, 'recorder', 'dynamic',
+            '--server', self.redis['server'],
+            '--queue', self.redis['queue'],
+            '--caching',
+            '--database', self.sqlite['database'],
+            '--table', self.sqlite['dynamic'],
+        ]
+        print('Running `%s`...' % ' '.join(arguments))
+        process = subprocess.Popen(arguments)
+        code = process.poll()
+        if code is not None and code != 0:
+            die('failed to run `%s`' % ' '.join(arguments))
+        self.dynamic = process
 
     def stop_dynamic(self):
         run('%s RPUSH %s recorder:halt > /dev/null' % (
             self.redis['bin'], self.redis['queue'])
         )
+        self.dynamic.wait()
+        self.dynamic = None
 
     def process_dynamic(self, t0, t1):
         self.progress('%10.2f ms' % (t1 / sim.util.Time.MS))
@@ -111,10 +132,8 @@ class Listener:
         self.logger.write('Elapsed time: %s s\n' % (time.time() - self.t_start))
 
 def run(command):
-    if os.system(command) != 0: die('failed to run `%s`' % command)
-
-def die(message):
-    raise SystemError(message)
+    if os.system(command) != 0:
+        die('failed to run `%s`' % command)
 
 config = Config()
 
