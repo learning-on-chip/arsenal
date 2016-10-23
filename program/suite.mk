@@ -34,13 +34,13 @@ $(2)-%: $${$(2)_output}/.$(2)-%
 
 $${$(2)_output}/.$(2)-%:
 	@(                                                                       \
-		program="$(1)-$(2)-$$*";                                             \
-		options="-d $${$(2)_output} $$$$(./configure.py $$$${program})";     \
-		mkdir -p $${$(2)_output};                                            \
-		cd $${$(2)_output};                                                  \
-		echo "Start recording $$$${program}...";                             \
-		PROGRAM_NAME=$$$${program} $${SNIPER_BIN} $${options} $$$${options}; \
-		echo "Finish recording $$$${program}."                               \
+	    program="$(1)-$(2)-$$*";                                             \
+	    options="-d $${$(2)_output} $$$$(./configure.py $$$${program})";     \
+	    mkdir -p $${$(2)_output};                                            \
+	    cd $${$(2)_output};                                                  \
+	    echo "Start recording $$$${program}...";                             \
+	    PROGRAM_NAME=$$$${program} $${SNIPER_BIN} $${options} $$$${options}; \
+	    echo "Finish recording $$$${program}."                               \
 	)
 	@touch $$@
 
