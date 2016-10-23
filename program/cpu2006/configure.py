@@ -5,14 +5,14 @@ import sys
 SUITE = 'cpu2006'
 
 def abort():
-    sys.stderr.write('Usage: configure.py <program name>-<program input>\n')
+    sys.stderr.write('Usage: configure.py {}-<benchmark name>-<input size>\n'.format(SUITE))
     sys.exit(1)
 
 def decompose(program):
     chunks = program.split('-')
-    if len(chunks) != 2:
+    if len(chunks) != 3:
         abort()
-    return chunks[0], chunks[1]
+    return chunks[1], chunks[2]
 
 def process(programs):
     if len(programs) == 0:
@@ -23,16 +23,16 @@ def process(programs):
         return process_multiple(programs)
 
 def process_single(program):
-    name, input = decompose(program)
-    return ['-n', 1, '-p', '{}-{}'.format(SUITE, name), '-i', input]
+    benchmark, input = decompose(program)
+    return ['-n', 1, '-p', '{}-{}'.format(SUITE, benchmark), '-i', input]
 
 def process_multiple(programs):
     benchmarks = []
     total_cores = 0
     for program in programs:
         cores = 1
-        name, input = decompose(program)
-        benchmarks.append('{}-{}-{}-{}'.format(SUITE, program, input, cores))
+        benchmark, input = decompose(program)
+        benchmarks.append('{}-{}-{}-{}'.format(SUITE, benchmark, input, cores))
         total_cores += cores
     benchmarks = ','.join(benchmarks)
     return ['-n', total_cores, '--benchmarks={}'.format(benchmarks)]

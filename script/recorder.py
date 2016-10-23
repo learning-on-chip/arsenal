@@ -39,8 +39,8 @@ class Config:
 
 class Worker:
     def __init__(self, config):
-        self.output = config.output
         self.program = config.program
+        self.output = config.output
         self.redis = config.redis
         self.sqlite = config.sqlite
 

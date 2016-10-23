@@ -5,49 +5,49 @@ import sys
 SUITE = 'parsec'
 
 def abort():
-    sys.stderr.write('Usage: configure.py <program name>-<program input>\n')
+    sys.stderr.write('Usage: configure.py {}-<benchmark name>-<input size>\n'.format(SUITE))
     sys.exit(1)
 
-def compute_cores_threads(name):
+def compute_cores_threads(benchmark):
     cores, threads = int(0), int(0)
     while threads <= 0:
         cores += 1
-        threads = compute_threads(name, cores)
+        threads = compute_threads(benchmark, cores)
     return (cores, threads)
 
-def compute_threads(name, threads):
-    if name == 'blackscholes':
+def compute_threads(benchmark, threads):
+    if benchmark == 'blackscholes':
         threads = threads - 1
-    elif name == 'bodytrack':
+    elif benchmark == 'bodytrack':
         threads = threads - 2
-    elif name == 'facesim':
+    elif benchmark == 'facesim':
         threads = threads
-    elif name == 'ferret':
+    elif benchmark == 'ferret':
         threads = (threads - 2) / 4
-    elif name == 'fluidanimate':
+    elif benchmark == 'fluidanimate':
         if threads > 1:
             threads = 1 << log2(threads - 1)
         else:
             threads = -1
-    elif name == 'swaptions':
+    elif benchmark == 'swaptions':
         threads = threads - 1
-    elif name == 'canneal':
+    elif benchmark == 'canneal':
         threads = threads - 1
-    elif name == 'raytrace':
+    elif benchmark == 'raytrace':
         threads = threads - 1
-    elif name == 'dedup':
+    elif benchmark == 'dedup':
         threads = threads / 4
-    elif name == 'streamcluster':
+    elif benchmark == 'streamcluster':
         threads = threads - 1
-    elif name == 'vips':
+    elif benchmark == 'vips':
         threads = threads - 2
     return threads
 
 def decompose(program):
     chunks = program.split('-')
-    if len(chunks) != 2:
+    if len(chunks) != 3:
         abort()
-    return chunks[0], chunks[1]
+    return chunks[1], chunks[2]
 
 def log2(n):
     result = -1
@@ -65,21 +65,21 @@ def process(programs):
         return process_multiple(programs)
 
 def process_single(program):
-    name, input = decompose(program)
-    cores, threads = compute_cores_threads(name)
+    benchmark, input = decompose(program)
+    cores, threads = compute_cores_threads(benchmark)
     arguments = []
     arguments.extend(['-B', 'force_nthreads', '-n', threads])
     arguments.extend(['-g', '--general/total_cores={}'.format(cores)])
-    arguments.extend(['-p', '{}-{}'.format(SUITE, name), '-i', input])
+    arguments.extend(['-p', '{}-{}'.format(SUITE, benchmark), '-i', input])
     return arguments
 
 def process_multiple(programs):
     benchmarks = []
     total_cores = 0
     for program in programs:
-        name, input = decompose(program)
+        benchmark, input = decompose(program)
         cores, _ = compute_cores_threads(program)
-        benchmarks.append("{}-{}-{}-{}".format(SUITE, program, input, cores))
+        benchmarks.append("{}-{}-{}-{}".format(SUITE, benchmark, input, cores))
         total_cores += cores
     benchmarks = ','.join(benchmarks)
     sys.stdout.write('-n {} --benchmarks={}'.format(total_cores, benchmarks))
