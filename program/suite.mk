@@ -29,10 +29,10 @@ else
 ${2}_output := ${OUTPUT_ROOT}/${1}/${2}
 endif
 
-${2}-%: $${${2}_output}/.${2}-%
+${2}-%: $${${2}_output}/.${1}-${2}-%
 	@exit 0
 
-$${${2}_output}/.${2}-%:
+$${${2}_output}/.${1}-${2}-%:
 	@(                                                                       \
 	    program="${1}-${2}-$$*";                                             \
 	    options="-d $${${2}_output} $$$$(./configure.py $$$${program})";     \
@@ -51,7 +51,7 @@ ${2}-kill:
 	@killall -q -KILL -- ${2} || true
 
 .PHONY: ${2}-clean ${2}-kill
-.PRECIOUS: $${${2}_output}/.${2}-%
+.PRECIOUS: $${${2}_output}/.${1}-${2}-%
 endef
 
 define declare_suite
